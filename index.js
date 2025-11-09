@@ -5,6 +5,17 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import helmet from 'helmet';
+
+
+// Internal Imports --------------------------------
+import connectDB from './config/connectDB.js';
+import userRouter from './route/user.route.js';
+import departmentRouter from './route/department.route.js';
+import employeeRouter from './route/employee.route.js';
+import { salaryRouter } from './route/salary.route.js';
+import { summaryRouter } from './route/summary.route.js';
+import attendenceRouter from './route/attendence.route.js';
+
 dotenv.config();
 const app=express()
 app.use(cors(
@@ -20,7 +31,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json()); 
 app.use(cookieParser());
-app.use(morgan('dev'));
+app.use(morgan());
 
 app.use(helmet(
     {
@@ -29,6 +40,8 @@ app.use(helmet(
 ));
 const port=process.env.PORT
 
+
+
 //Routes
 app.get('/', (req, res) =>{
     res.json({
@@ -36,6 +49,14 @@ app.get('/', (req, res) =>{
     })
 })
 
-app.listen(port, () => {
-  console.log(`🚀 Server is running on port ${port}`);
+
+// Routes
+app.use('/api/user',userRouter)
+app.use('/api/department',departmentRouter)
+app.use('/api/employee',employeeRouter)
+app.use('/api/salary',salaryRouter)
+app.use('/api/summary',summaryRouter)
+app.use('/api/attendence',attendenceRouter)
+connectDB().then(()=>{
+    app.listen(port, () => console.log(`Server running on port ${port}`))
 });
